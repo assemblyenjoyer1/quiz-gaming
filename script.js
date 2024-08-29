@@ -1,4 +1,40 @@
-const questions = [
+const easyQuestions = [
+    {
+        "question": "What does HTML stand for?",
+        "options": ["A) Hypertext Markup Language", "B) Home Tool Markup Language", "C) Hyperlinks and Text Markup Language", "D) Hyperlinking Text Markup Language"],
+        "answer": "A"
+    },
+    {
+        "question": "What is the correct way to create a function in JavaScript?",
+        "options": ["A) function = myFunction()", "B) function:myFunction()", "C) function myFunction()", "D) create myFunction()"],
+        "answer": "C"
+    },
+    {
+        "question": "Which of these is a front-end language?",
+        "options": ["A) Python", "B) Java", "C) HTML", "D) C++"],
+        "answer": "C"
+    },
+];
+
+const mediumQuestions = [
+    {
+        "question": "Which method is used to convert JSON data to a JavaScript object?",
+        "options": ["A) JSON.parse()", "B) JSON.stringify()", "C) JSON.objectify()", "D) JSON.convert()"],
+        "answer": "A"
+    },
+    {
+        "question": "In CSS, what does 'position: absolute;' do?",
+        "options": ["A) Positions the element relative to its parent", "B) Positions the element relative to the viewport", "C) Removes the element from the document flow", "D) Centers the element on the page"],
+        "answer": "B"
+    },
+    {
+        "question": "What does the 'this' keyword refer to in JavaScript?",
+        "options": ["A) The current object", "B) The global object", "C) The parent object", "D) The DOM element"],
+        "answer": "A"
+    },
+];
+
+const hardQuestions = [
     {
         "question": "What is the primary purpose of a version control system?",
         "options": ["A) To compile code", "B) To track changes in code", "C) To deploy applications", "D) To write documentation"],
@@ -103,16 +139,39 @@ const questions = [
 
 let currentQuestionIndex = 0;
 let score = 0;
+let selectedQuestions = [];
 
 document.addEventListener('DOMContentLoaded', () => {
-    const totalQuestions = questions.length;
-    document.getElementById('total-questions').textContent = totalQuestions;
-
-    displayQuestion();
+    const difficultyButtons = document.querySelectorAll('.difficulty-btn');
+    
+    difficultyButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const difficulty = button.getAttribute('data-difficulty');
+            selectDifficulty(difficulty);
+        });
+    });
 });
 
+function selectDifficulty(difficulty) {
+    switch(difficulty) {
+        case 'easy':
+            selectedQuestions = easyQuestions;
+            break;
+        case 'medium':
+            selectedQuestions = mediumQuestions;
+            break;
+        case 'hard':
+            selectedQuestions = hardQuestions;
+            break;
+    }
+    document.getElementById('difficulty-selection').style.display = 'none';
+    document.getElementById('quiz-container').style.display = 'block';
+    document.getElementById('total-questions').textContent = selectedQuestions.length;
+    displayQuestion();
+}
+
 function displayQuestion() {
-    const questionData = questions[currentQuestionIndex];
+    const questionData = selectedQuestions[currentQuestionIndex];
     document.getElementById('question').textContent = questionData.question;
 
     const optionsContainer = document.getElementById('options');
@@ -130,7 +189,7 @@ function displayQuestion() {
 }
 
 function checkAnswer(selectedIndex) {
-    const questionData = questions[currentQuestionIndex];
+    const questionData = selectedQuestions[currentQuestionIndex];
     const selectedOption = questionData.options[selectedIndex];
 
     const feedbackMessage = document.getElementById('feedback-message');
@@ -148,10 +207,9 @@ function checkAnswer(selectedIndex) {
 
 document.getElementById('next-button').addEventListener('click', () => {
     document.getElementById('feedback-panel').classList.remove('show');
-
     currentQuestionIndex++;
     
-    if (currentQuestionIndex < questions.length) {
+    if (currentQuestionIndex < selectedQuestions.length) {
         displayQuestion();
     } else {
         showResults();
@@ -161,8 +219,8 @@ document.getElementById('next-button').addEventListener('click', () => {
 function showResults() {
     document.getElementById('quiz-container').innerHTML = `
         <h1>Quiz Completed!</h1>
-        <p>Your final score is ${score}/${questions.length}.</p>
-        <p>${getFeedback(score, questions.length)}</p>
+        <p>Your final score is ${score}/${selectedQuestions.length}.</p>
+        <p>${getFeedback(score, selectedQuestions.length)}</p>
     `;
 }
 
