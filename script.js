@@ -140,6 +140,7 @@ const hardQuestions = [
 let currentQuestionIndex = 0;
 let score = 0;
 let selectedQuestions = [];
+let userRating = 0;
 
 document.addEventListener('DOMContentLoaded', () => {
     const difficultyButtons = document.querySelectorAll('.difficulty-btn');
@@ -222,7 +223,34 @@ function showResults() {
         <p>Your final score is ${score}/${selectedQuestions.length}.</p>
         <p>${getFeedback(score, selectedQuestions.length)}</p>
     `;
+
+    document.getElementById('feedback-form').classList.remove('hidden');
 }
+
+document.querySelectorAll('#star-rating .star').forEach(star => {
+    star.addEventListener('click', () => {
+        userRating = parseInt(star.getAttribute('data-value'));
+        document.querySelectorAll('#star-rating .star').forEach(s => {
+            s.classList.toggle('selected', parseInt(s.getAttribute('data-value')) <= userRating);
+        });
+    });
+});
+
+document.getElementById('submit-feedback').addEventListener('click', () => {
+    if (userRating > 0) {
+        const feedbackText = `User Rating: ${userRating}\nScore: ${score}/${selectedQuestions.length}\n\n`;
+        
+        const blob = new Blob([feedbackText], { type: 'text/plain' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'feedback.txt';
+        link.click();
+        
+        document.getElementById('feedback-form').classList.add('hidden');
+    } else {
+        alert('Please select a rating before submitting.');
+    }
+});
 
 function getFeedback(score, totalQuestions) {
     if (score === totalQuestions) {
